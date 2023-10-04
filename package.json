@@ -1,0 +1,91 @@
+{
+  "name": "remix-toast",
+  "version": "1.0.0",
+  "description": "Utility functions for server-side toast notifications",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js",
+        "import": "./dist/index.js"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "import": "./dist/index.cjs",
+        "require": "./dist/index.cjs",
+        "default": "./dist/index.cjs"
+      },
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "typings": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "workspaces": [
+    "src/testing-app",
+    "."
+  ],
+  "scripts": {
+    "build": "tsup src/index.ts --format cjs,esm --dts --clean",
+    "dev-build": "tsup src/index.ts --format cjs,esm --dts --clean",
+    "remix-dev": "npm run dev -w src/testing-app",
+    "build:dev": "npm run dev-build",
+    "build:dev:watch": "npm run dev-build -- --watch",
+    "dev": "npm-run-all -s build:dev -p remix-dev build:dev:watch",
+    "prepublishOnly": "npm run build",
+    "test": "vitest run",
+    "tsc": "tsc",
+    "validate": "npm run lint && npm run tsc && npm run test",
+    "lint": "eslint \"src/**/*.+(ts|tsx)\"",
+    "lint:fix": "npm run lint -- --fix",
+    "prettier": "prettier app --check",
+    "prettier:fix": "prettier app --write",
+    "format-code": "npm run prettier:fix & npm run lint:fix"
+  },
+  "peerDependencies": {
+    "@remix-run/server-runtime": ">=1.15"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Code-Forge-Net/remix-toast.git"
+  },
+  "keywords": [
+    "Remix",
+    "Remix.run",
+    "toast",
+    "notifications",
+    "utilities"
+  ],
+  "author": "Alem Tuzlak",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Code-Forge-Net/remix-toast/issues"
+  },
+  "homepage": "https://github.com/Code-Forge-Net/remix-toast#readme",
+  "readme": "https://github.com/Code-Forge-Net/remix-toast#readme",
+  "dependencies": {
+    "zod": "^3.22.3"
+  },
+  "devDependencies": {
+    "@remix-run/server-runtime": "^2.0.0",
+    "@testing-library/react": "^14.0.0",
+    "@types/node": "^18.15.11",
+    "@types/react": "^18.0.34",
+    "@vitest/coverage-c8": "^0.30.1",
+    "babel-eslint": "^10.1.0",
+    "eslint-config-prettier": "^9.0.0",
+    "eslint-plugin-prettier": "^5.0.0",
+    "happy-dom": "^9.5.0",
+    "npm-run-all": "^4.1.5",
+    "prettier": "^3.0.1",
+    "remix-development-tools": "^3.1.1",
+    "tsup": "^7.2.0",
+    "typescript": "^5.0.4",
+    "vite": "^4.2.1",
+    "vitest": "^0.30.1"
+  }
+}
