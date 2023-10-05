@@ -1,6 +1,6 @@
 {
   "name": "remix-toast",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Utility functions for server-side toast notifications",
   "type": "module",
   "main": "./dist/index.cjs",
@@ -26,16 +26,19 @@
     "dist"
   ],
   "workspaces": [
-    "src/testing-app",
+    "src/test-apps/testing-app",
+    "src/test-apps/cloudflare",
     "."
   ],
   "scripts": {
     "build": "tsup src/index.ts --format cjs,esm --dts --clean",
     "dev-build": "tsup src/index.ts --format cjs,esm --dts --clean",
-    "remix-dev": "npm run dev -w src/testing-app",
+    "remix-dev": "npm run dev -w src/test-apps/testing-app",
+    "remix-dev-cloud": "npm run dev -w src/test-apps/cloudflare",
     "build:dev": "npm run dev-build",
     "build:dev:watch": "npm run dev-build -- --watch",
     "dev": "npm-run-all -s build:dev -p remix-dev build:dev:watch",
+    "dev:c": "npm-run-all -s build:dev -p remix-dev-cloud build:dev:watch",
     "prepublishOnly": "npm run build",
     "test": "vitest run",
     "tsc": "tsc",

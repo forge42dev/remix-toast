@@ -58,7 +58,7 @@ export function redirectWithToast(url: string, toast: ToastMessage, init?: Respo
  * @returns Returns redirect response with toast cookie set
  */
 export function redirectWithError(redirectUrl: string, message: string, init?: ResponseInit) {
-  return redirectWithToast(redirectUrl, { message: `errors.${message}`, type: "error" }, init);
+  return redirectWithToast(redirectUrl, { message: `${message}`, type: "error" }, init);
 }
 
 /**
@@ -71,7 +71,7 @@ export function redirectWithError(redirectUrl: string, message: string, init?: R
  * @returns Returns redirect response with toast cookie set
  */
 export function redirectWithSuccess(redirectUrl: string, message: string, init?: ResponseInit) {
-  return redirectWithToast(redirectUrl, { message: `notification.${message}`, type: "success" }, init);
+  return redirectWithToast(redirectUrl, { message: `${message}`, type: "success" }, init);
 }
 
 /**
@@ -84,7 +84,7 @@ export function redirectWithSuccess(redirectUrl: string, message: string, init?:
  * @returns Returns redirect response with toast cookie set
  */
 export function redirectWithWarning(redirectUrl: string, message: string, init?: ResponseInit) {
-  return redirectWithToast(redirectUrl, { message: `notification.${message}`, type: "warning" }, init);
+  return redirectWithToast(redirectUrl, { message: `${message}`, type: "warning" }, init);
 }
 
 /**
@@ -97,7 +97,7 @@ export function redirectWithWarning(redirectUrl: string, message: string, init?:
  * @returns Returns redirect response with toast cookie set
  */
 export function redirectWithInfo(redirectUrl: string, message: string, init?: ResponseInit) {
-  return redirectWithToast(redirectUrl, { message: `notification.${message}`, type: "info" }, init);
+  return redirectWithToast(redirectUrl, { message: `${message}`, type: "info" }, init);
 }
 
 /**
