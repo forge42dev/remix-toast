@@ -104,7 +104,7 @@ export default function App() {
 
 ```
 
-![react-toastify](./assets/react-toastify.mp4) 
+![react-toastify](./assets/react-toastify.gif) 
 
 #### Sonner
 
@@ -149,7 +149,7 @@ export default function App() {
 
 ```
 
-![react-toastify](./assets/sonner.mp4) 
+![react-toastify](./assets/sonner.gif) 
 
 ## Utilities
 
