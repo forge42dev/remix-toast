@@ -1,4 +1,9 @@
 # Remix Toast
+![GitHub Repo stars](https://img.shields.io/github/stars/Code-Forge-Net/remix-toast?style=social)
+![npm](https://img.shields.io/npm/v/remix-toast?style=plastic)
+![GitHub](https://img.shields.io/github/license/Code-Forge-Net/remix-toast?style=plastic)
+![npm](https://img.shields.io/npm/dy/remix-toast?style=plastic) 
+![GitHub top language](https://img.shields.io/github/languages/top/Code-Forge-Net/remix-toast?style=plastic) 
 
 Simple server-side toast management library for Remix.run!
 
@@ -99,7 +104,7 @@ export default function App() {
 
 ```
 
-![react-toastify](./assets/react-toastify.gif) 
+![react-toastify](./assets/react-toastify.mp4) 
 
 #### Sonner
 
@@ -144,7 +149,7 @@ export default function App() {
 
 ```
 
-![react-toastify](./assets/sonner.gif) 
+![react-toastify](./assets/sonner.mp4) 
 
 ## Utilities
 
