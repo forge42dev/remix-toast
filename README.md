@@ -13,6 +13,7 @@ If you wish to read an in depth explanation of how this works you can find it he
 https://alemtuzlak.hashnode.dev/handling-toasts-in-remix
 
 
+
 ## Installation
 
 ```bash
@@ -52,7 +53,9 @@ export default function App({ children }: { children: ReactNode }) {
 ```
 ### Client-side
 
-After this you can then use any toast notification library you prefer, here is an example with `react-toastify`:
+After this you can then use any toast notification library you prefer, but here are some examples:
+
+#### react-toastify
 
 ```tsx
 import { json, type LinksFunction, type LoaderFunctionArgs } from "@remix-run/node";
@@ -95,6 +98,53 @@ export default function App() {
 }
 
 ```
+
+![react-toastify](./assets/react-toastify.gif) 
+
+#### Sonner
+
+```tsx
+import { json, type LinksFunction, type LoaderFunctionArgs } from "@remix-run/node";
+import { Links, LiveReload, Meta, Outlet, Scripts, ScrollRestoration, useLoaderData } from "@remix-run/react";
+import { useEffect } from "react";
+import { getToast } from "remix-toast";
+import { Toaster, toast as notify } from "sonner"; 
+ 
+// Implemented from above
+export const loader = async ({ request }: LoaderFunctionArgs) => {
+  const { toast, headers } = await getToast(request);
+  return json({ toast }, { headers });
+};
+
+export default function App() {
+  const { toast } = useLoaderData<typeof loader>();
+  // Hook to show the toasts
+   useEffect(() => {
+    if (toast?.type === "error") {
+      notify.error(toast.message);
+    }
+    if (toast?.type === "success") {
+      notify.success(toast.message);
+    }
+  }, [toast]);
+
+  return (
+    <html lang="en">
+      <head>
+        ...
+      </head>
+      <body>
+        ...
+        {/* Add the toast container */}
+        <ToastContainer />
+      </body>
+    </html>
+  );
+}
+
+```
+
+![react-toastify](./assets/sonner.gif) 
 
 ## Utilities
 

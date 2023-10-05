@@ -1,12 +1,12 @@
 import type { MetaFunction } from "@remix-run/node";
 import { useSubmit } from "@remix-run/react";
-import { redirectWithWarning } from "remix-toast";
+import { redirectWithError } from "remix-toast";
 
 export const meta: MetaFunction = () => {
   return [{ title: "New Remix App" }, { name: "description", content: "Welcome to Remix!" }];
 };
 export const action = () => {
-  return redirectWithWarning("/test", "This is a success message");
+  return redirectWithError("/test", "This is an error message");
 };
 
 export default function Index() {

@@ -6,7 +6,7 @@ export const meta: MetaFunction = () => {
   return [{ title: "New Remix App" }, { name: "description", content: "Welcome to Remix!" }];
 };
 export const action = () => {
-  return redirectWithError("/test", "This is a success message");
+  return redirectWithError("/test", "This is an error message");
 };
 
 export default function Index() {
