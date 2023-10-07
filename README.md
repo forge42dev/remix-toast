@@ -36,7 +36,7 @@ import { getToast } from "remix-toast";
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   // Extracts the toast from the request
-  const { toast, headers } = getToast(request);
+  const { toast, headers } = await getToast(request);
   // Important to pass in the headers so the toast is cleared properly
   return json({ toast }, { headers });
 }
