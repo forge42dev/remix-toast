@@ -42,7 +42,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 }
 
 export default function App({ children }: { children: ReactNode }) {
-  const { toast } = useRouteData<{ toast: Toast }>();
+  const { toast } = useLoaderData<typeof loader>();
   
   useEffect(() => {
    if(toast){
