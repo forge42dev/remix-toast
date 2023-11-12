@@ -1,4 +1,4 @@
-import { createCookieSessionStorageFactory, createCookieFactory, redirect } from "@remix-run/server-runtime";
+import { createCookieSessionStorageFactory, createCookieFactory, redirect, json } from "@remix-run/server-runtime";
 import { FlashSessionValues, ToastMessage, flashSessionValuesSchema } from "./schema";
 import { sign, unsign } from "./crypto";
 
@@ -36,6 +36,40 @@ async function redirectWithFlash(url: string, flash: FlashSessionValues, init?: 
   });
 }
 
+/**
+ * Helper method used to display a success toast notification without redirection
+ *
+ * It need to be awaited
+ * @param successMessage Message to be shown as success
+ * @returns Returns successMessage and a toast cookie set
+ */
+export async function displaySuccessMessage(successMessage: string) {
+  return json(
+    { successMessage },
+    {
+      headers: await flashMessage({
+        toast: { message: successMessage, type: "success" },
+      }),
+    },
+  );
+}
+/**
+ * Helper method used to display an error toast notification without redirection
+ *
+ * It need to be awaited
+ * @param errorMessage Message to be shown as success
+ * @returns Returns errorMessage and a toast cookie set
+ */
+export async function displayErrorMessage(errorMessage: string) {
+  return json(
+    { errorMessage },
+    {
+      headers: await flashMessage({
+        toast: { message: errorMessage, type: "error" },
+      }),
+    },
+  );
+}
 /**
  * Helper method used to redirect the user to a new page with a toast notification
  *
