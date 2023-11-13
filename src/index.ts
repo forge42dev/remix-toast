@@ -40,15 +40,18 @@ async function redirectWithFlash(url: string, flash: FlashSessionValues, init?: 
  * Helper method used to display a success toast notification without redirection
  *
  * It need to be awaited
- * @param successMessage Message to be shown as success
- * @returns Returns successMessage and a toast cookie set
+ * @param passedInData Generic object containing the data
+ * @param toast Message to be shown as success
+ * @param init Additional response options (status code, additional headers etc)
+ * @returns Returns data and a toast cookie set
  */
-export async function displaySuccessMessage(successMessage: string) {
+export async function jsonWithSuccess<T>(passedInData: T, toast: string, init?: ResponseInit) {
   return json(
-    { successMessage },
+    { ...passedInData, toast },
     {
+      ...init,
       headers: await flashMessage({
-        toast: { message: successMessage, type: "success" },
+        toast: { message: toast, type: "success" },
       }),
     },
   );
@@ -57,15 +60,18 @@ export async function displaySuccessMessage(successMessage: string) {
  * Helper method used to display an error toast notification without redirection
  *
  * It need to be awaited
- * @param errorMessage Message to be shown as success
- * @returns Returns errorMessage and a toast cookie set
+ * @param passedInData Generic object containing the data
+ * @param toast Message to be shown as error
+ * @param init Additional response options (status code, additional headers etc)
+ * @returns Returns data and a toast cookie set
  */
-export async function displayErrorMessage(errorMessage: string) {
+export async function jsonWithError<T>(passedInData: T, toast: string, init?: ResponseInit) {
   return json(
-    { errorMessage },
+    { ...passedInData, toast },
     {
+      ...init,
       headers: await flashMessage({
-        toast: { message: errorMessage, type: "error" },
+        toast: { message: toast, type: "error" },
       }),
     },
   );

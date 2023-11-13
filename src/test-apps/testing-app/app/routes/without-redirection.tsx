@@ -2,7 +2,7 @@ import { cssBundleHref } from "@remix-run/css-bundle";
 import { DataFunctionArgs, type LinksFunction } from "@remix-run/node";
 import { Form, useActionData } from "@remix-run/react";
 import { useEffect } from "react";
-import { displayErrorMessage, displaySuccessMessage } from "../../../../index";
+import { jsonWithError, jsonWithSuccess } from "remix-toast";
 
 export const links: LinksFunction = () => [...(cssBundleHref ? [{ rel: "stylesheet", href: cssBundleHref }] : [])];
 
@@ -12,9 +12,9 @@ export async function action({ request }: DataFunctionArgs) {
 
   switch (messageType) {
     case "success":
-      return displaySuccessMessage("This is a success message");
+      return jsonWithSuccess({},"This is a success message"); 
     case "error":
-      return displayErrorMessage("This is an error message");
+      return jsonWithError({}, "This is an error message");
   }
 }
 
@@ -23,10 +23,7 @@ export default function TestWithModals() {
 
   useEffect(() => {
     if (actionData) {
-      if ("successMessage" in actionData) {
-        //Do something
-      }
-      if ("errorMessage" in actionData) {
+      if ("toast" in actionData) {
         //Do something
       }
     }

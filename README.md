@@ -209,19 +209,21 @@ export const action = () => {
 };
 ```
 
-### displaySuccessMessage
+### jsonWithSuccess
 
 Show a success toast message without a redirection
 
 ```tsx
-import { displaySuccessMessage } from "remix-toast";
+import { jsonWithSuccess } from "remix-toast";
 
 export const action = () => {
-  return displaySuccessMessage("Operation successful! 🎉");
+  // The empty object passed as the first argument can be used
+  // to include additional data to be returned along with the success message.
+  return jsonWithSuccess({},"Operation successful! 🎉");
 };
 ```
 
-You can do more actions on the client side once the `successMessage` is received from the action
+You can do more actions on the client side once the `toast` is received from the action
 
 ```tsx
 export default function YourRoute() {
@@ -229,7 +231,7 @@ export default function YourRoute() {
   // Hook to show the toasts
   useEffect(() => {
     if (actionData) {
-      if ("successMessage" in actionData) {
+      if ("toast" in actionData) {
         //Do something
       }
     }
@@ -241,19 +243,21 @@ export default function YourRoute() {
 }
 ```
 
-### displayErrorMessage
+### jsonWithError
 
 Show an error toast message without a redirection
 
 ```tsx
-import { displayErrorMessage } from "remix-toast";
+import { jsonWithError } from "remix-toast";
 
 export const action = () => {
-  return displayErrorMessage("Oops! Something went wrong. Please try again later.");
+  // The empty object passed as the first argument can be used
+  // to include additional data to be returned along with the error message.
+  return jsonWithError({},"Oops! Something went wrong. Please try again later.");
 };
 ```
 
-You can do more actions on the client side once the `errorMessage` is received from the action
+You can do more actions on the client side once the `toast` is received from the action
 
 ```tsx
 export default function YourRoute() {
@@ -261,7 +265,7 @@ export default function YourRoute() {
   // Hook to show the toasts
   useEffect(() => {
     if (actionData) {
-      if ("errorMessage" in actionData) {
+      if ("toast" in actionData) {
         //Do something
       }
     }
