@@ -211,70 +211,50 @@ export const action = () => {
 
 ### jsonWithSuccess
 
-Show a success toast message without a redirection
+Display a success toast message without a redirection.
 
 ```tsx
 import { jsonWithSuccess } from "remix-toast";
 
 export const action = () => {
-  // The empty object passed as the first argument can be used
-  // to include additional data to be returned along with the success message.
-  return jsonWithSuccess({},"Operation successful! 🎉");
+  return jsonWithSuccess({ result: "Data saved successfully" }, "Operation successful! 🎉");
 };
-```
-
-You can do more actions on the client side once the `toast` is received from the action
-
-```tsx
-export default function YourRoute() {
-  const actionData = useActionData<typeof action>();
-  // Hook to show the toasts
-  useEffect(() => {
-    if (actionData) {
-      if ("toast" in actionData) {
-        //Do something
-      }
-    }
-  }, [actionData]);
-
-  return (
-// the rest of your code
-  );
-}
 ```
 
 ### jsonWithError
 
-Show an error toast message without a redirection
+Display an error toast message without a redirection.
 
 ```tsx
 import { jsonWithError } from "remix-toast";
 
 export const action = () => {
-  // The empty object passed as the first argument can be used
-  // to include additional data to be returned along with the error message.
-  return jsonWithError({},"Oops! Something went wrong. Please try again later.");
+  return jsonWithError(null, "Oops! Something went wrong. Please try again later.");
 };
 ```
 
-You can do more actions on the client side once the `toast` is received from the action
+### jsonWithInfo
+
+Display an info toast message without a redirection.
 
 ```tsx
-export default function YourRoute() {
-  const actionData = useActionData<typeof action>();
-  // Hook to show the toasts
-  useEffect(() => {
-    if (actionData) {
-      if ("toast" in actionData) {
-        //Do something
-      }
-    }
-  }, [actionData]);
+import { jsonWithInfo } from "remix-toast";
 
-  return (
-// the rest of your code
-  );
-}
+export const action = () => {
+  return jsonWithInfo({ info: "Additional information" }, "Your profile has been successfully updated.");
+};
+```
+
+### jsonWithWarning
+
+Display a warning toast message without a redirection.
+
+```tsx
+import { jsonWithWarning } from "remix-toast";
+
+export const action = () => {
+  return jsonWithWarning({ warning: "Potential issues" }, "Your session is about to expire.");
+};
 ```
 
 # Thank you

@@ -36,46 +36,73 @@ async function redirectWithFlash(url: string, flash: FlashSessionValues, init?: 
   });
 }
 
-/**
- * Helper method used to display a success toast notification without redirection
- *
- * It need to be awaited
- * @param passedInData Generic object containing the data
- * @param toast Message to be shown as success
- * @param init Additional response options (status code, additional headers etc)
- * @returns Returns data and a toast cookie set
- */
-export async function jsonWithSuccess<T>(passedInData: T, toast: string, init?: ResponseInit) {
-  return json(
-    { ...passedInData, toast },
-    {
-      ...init,
-      headers: await flashMessage({
-        toast: { message: toast, type: "success" },
-      }),
-    },
-  );
+async function jsonWithFlash<T>(data: T, flash: FlashSessionValues, init?: ResponseInit) {
+  return json(data, {
+    ...init,
+    headers: await flashMessage(flash, init?.headers),
+  });
 }
+
 /**
- * Helper method used to display an error toast notification without redirection
+ * Helper method used to display a toast notification without redirection
  *
- * It need to be awaited
- * @param passedInData Generic object containing the data
- * @param toast Message to be shown as error
+ * @param data Generic object containing the data
+ * @param toast Toast message and it's type
  * @param init Additional response options (status code, additional headers etc)
- * @returns Returns data and a toast cookie set
+ * @returns Returns data with toast cookie set
  */
-export async function jsonWithError<T>(passedInData: T, toast: string, init?: ResponseInit) {
-  return json(
-    { ...passedInData, toast },
-    {
-      ...init,
-      headers: await flashMessage({
-        toast: { message: toast, type: "error" },
-      }),
-    },
-  );
+export function jsonWithToast<T>(data: T, toast: ToastMessage, init?: ResponseInit) {
+  return jsonWithFlash(data, { toast }, init);
 }
+
+/**
+ * Helper method used to generate a JSON response object with a success toast message.
+ *
+ * @param data The data to be included in the response.
+ * @param message The message for the success toast notification.
+ * @param init Additional response options (status code, additional headers etc)
+ * @returns Returns a JSON response object with the specified success toast message.
+ */
+export function jsonWithSuccess<T>(data: T, message: string, init?: ResponseInit) {
+  return jsonWithToast(data, { message, type: "success" }, init);
+}
+
+/**
+ * Helper method used to generate a JSON response object with an error toast message.
+ *
+ * @param data The data to be included in the response.
+ * @param message The message for the error toast notification.
+ * @param init Additional response options (status code, additional headers etc)
+ * @returns Returns a JSON response object with the specified error toast message.
+ */
+export function jsonWithError<T>(data: T, message: string, init?: ResponseInit) {
+  return jsonWithToast(data, { message, type: "error" }, init);
+}
+
+/**
+ * Helper method used to generate a JSON response object with an info toast message.
+ *
+ * @param data The data to be included in the response.
+ * @param message The message for the info toast notification.
+ * @param init Additional response options (status code, additional headers etc)
+ * @returns Returns a JSON response object with the specified info toast message.
+ */
+export function jsonWithInfo<T>(data: T, message: string, init?: ResponseInit) {
+  return jsonWithToast(data, { message, type: "info" }, init);
+}
+
+/**
+ * Helper method used to generate a JSON response object with a warning toast message.
+ *
+ * @param data The data to be included in the response.
+ * @param message The message for the warning toast notification.
+ * @param init Additional response options (status code, additional headers etc)
+ * @returns Returns a JSON response object with the specified warning toast message.
+ */
+export function jsonWithWarning<T>(data: T, message: string, init?: ResponseInit) {
+  return jsonWithToast(data, { message, type: "warning" }, init);
+}
+
 /**
  * Helper method used to redirect the user to a new page with a toast notification
  *
