@@ -16,9 +16,6 @@ library is server agnostic and should work with any server setup.
 
 If you wish to read an in depth explanation of how this works you can find it here:
 https://alemtuzlak.hashnode.dev/handling-toasts-in-remix
-
-
-
 ## Installation
 
 ```bash
@@ -101,7 +98,6 @@ export default function App() {
     </html>
   );
 }
-
 ```
 
 ![react-toastify](./assets/react-toastify.gif) 
@@ -113,8 +109,8 @@ import { json, type LinksFunction, type LoaderFunctionArgs } from "@remix-run/no
 import { Links, LiveReload, Meta, Outlet, Scripts, ScrollRestoration, useLoaderData } from "@remix-run/react";
 import { useEffect } from "react";
 import { getToast } from "remix-toast";
-import { Toaster, toast as notify } from "sonner"; 
- 
+import { Toaster, toast as notify } from "sonner";
+
 // Implemented from above
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const { toast, headers } = await getToast(request);
@@ -124,7 +120,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 export default function App() {
   const { toast } = useLoaderData<typeof loader>();
   // Hook to show the toasts
-   useEffect(() => {
+  useEffect(() => {
     if (toast?.type === "error") {
       notify.error(toast.message);
     }
@@ -135,9 +131,7 @@ export default function App() {
 
   return (
     <html lang="en">
-      <head>
-        ...
-      </head>
+      <head>...</head>
       <body>
         ...
         {/* Add the toast container */}
@@ -146,7 +140,6 @@ export default function App() {
     </html>
   );
 }
-
 ```
 
 ![react-toastify](./assets/sonner.gif) 
@@ -184,7 +177,6 @@ export const action = () => {
 Redirects to a new route and shows an error toast message.
 
 ```tsx
-
 import { redirectWithError } from "remix-toast";
 
 export const action = () => {
@@ -202,8 +194,7 @@ import { redirectWithInfo } from "remix-toast";
 
 export const action = () => {
   return redirectWithInfo("/login", "You need to login to access this page");
-}
-
+};
 ```
 
 ### redirectWithWarning
@@ -211,17 +202,62 @@ export const action = () => {
 Redirects to a new route and shows a warning toast message.
 
 ```tsx
-
 import { redirectWithWarning } from "remix-toast";
 
 export const action = () => {
   return redirectWithWarning("/login", "You need to login to access this page");
-}
+};
+```
 
+### jsonWithSuccess
+
+Display a success toast message without a redirection.
+
+```tsx
+import { jsonWithSuccess } from "remix-toast";
+
+export const action = () => {
+  return jsonWithSuccess({ result: "Data saved successfully" }, "Operation successful! 🎉");
+};
+```
+
+### jsonWithError
+
+Display an error toast message without a redirection.
+
+```tsx
+import { jsonWithError } from "remix-toast";
+
+export const action = () => {
+  return jsonWithError(null, "Oops! Something went wrong. Please try again later.");
+};
+```
+
+### jsonWithInfo
+
+Display an info toast message without a redirection.
+
+```tsx
+import { jsonWithInfo } from "remix-toast";
+
+export const action = () => {
+  return jsonWithInfo({ info: "Additional information" }, "Your profile has been successfully updated.");
+};
+```
+
+### jsonWithWarning
+
+Display a warning toast message without a redirection.
+
+```tsx
+import { jsonWithWarning } from "remix-toast";
+
+export const action = () => {
+  return jsonWithWarning({ warning: "Potential issues" }, "Your session is about to expire.");
+};
 ```
 
 # Thank you
-
 
 If you wish to support this project you can do so by starring this repository and sharing it with your friends.
 

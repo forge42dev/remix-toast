@@ -1,5 +1,5 @@
 import type { MetaFunction } from "@remix-run/node";
-import { useSubmit } from "@remix-run/react";
+import { Link, useSubmit } from "@remix-run/react";
 import { redirectWithError } from "remix-toast";
 
 export const meta: MetaFunction = () => {
@@ -30,6 +30,9 @@ export default function Index() {
           <a target="_blank" href="https://remix.run/docs" rel="noreferrer">
             Remix Docs
           </a>
+        </li>
+        <li>
+          <Link to="/without-redirection">Test without redirection</Link>
         </li>
       </ul>
     </div>
