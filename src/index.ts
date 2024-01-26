@@ -25,8 +25,13 @@ const sessionStorage = createCookieSessionStorageFactory(createCookie)({
   cookie: toastCookieOptions,
 });
 
-export function setToastCookieOptions(customOptions: ToastCookieOptions) {
-  Object.assign(toastCookieOptions, customOptions);
+/**
+ * Sets the cookie options to be used for the toast cookie
+ *
+ * @param options Cookie options to be used for the toast cookie
+ */
+export function setToastCookieOptions(options: ToastCookieOptions) {
+  Object.assign(toastCookieOptions, options);
   Object.assign(
     sessionStorage,
     createCookieSessionStorageFactory(createCookie)({
