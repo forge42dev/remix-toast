@@ -11,7 +11,7 @@ import { sign, unsign } from "./crypto";
 const FLASH_SESSION = "flash";
 const createCookie = createCookieFactory({ sign, unsign });
 
-export type ToastCookieOptions = Partial<SessionIdStorageStrategy["cookie"]>;
+type ToastCookieOptions = Partial<SessionIdStorageStrategy["cookie"]>;
 
 const toastCookieOptions = {
   name: "toast-session",
@@ -208,4 +208,4 @@ export async function getToast(request: Request): Promise<{ toast: ToastMessage 
   return { toast, headers };
 }
 
-export type { ToastMessage };
+export type { ToastMessage, ToastCookieOptions };
