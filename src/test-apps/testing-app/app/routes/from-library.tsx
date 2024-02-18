@@ -1,11 +1,18 @@
-import { cssBundleHref } from "@remix-run/css-bundle";
-import { DataFunctionArgs, type LinksFunction } from "@remix-run/node";
-import { Form } from "@remix-run/react";
-import { jsonWithError, jsonWithInfo, jsonWithSuccess, jsonWithWarning } from "~/toast";
+import { ActionFunctionArgs, json, type LinksFunction, type LoaderFunctionArgs } from "@remix-run/node";
+import { Form, useLoaderData } from "@remix-run/react";
+import { useEffect } from "react";
+import { toast as notify } from "react-toastify";
+import toastStyles from "react-toastify/dist/ReactToastify.css";
+import { getToast, redirectWithError, redirectWithInfo, redirectWithSuccess, redirectWithWarning } from "remix-toast";
 
-export const links: LinksFunction = () => [...(cssBundleHref ? [{ rel: "stylesheet", href: cssBundleHref }] : [])];
+export const links: LinksFunction = () => [{ rel: "stylesheet", href: toastStyles }];
 
-export async function action({ request }: DataFunctionArgs) {
+export const loader = async ({ request }: LoaderFunctionArgs) => {
+  const { toast, headers } = await getToast(request);
+  return json({ toast }, { headers });
+};
+
+export async function action({ request }: ActionFunctionArgs) {
   const formData = await request.formData();
   const messageType = formData.get("messageType");
 
@@ -13,17 +20,23 @@ export async function action({ request }: DataFunctionArgs) {
   // to include additional data to be returned along with the toasters.
   switch (messageType) {
     case "success":
-      return jsonWithSuccess({}, "This is a success message");
+      return redirectWithSuccess("/from-library", "This is a success message");
     case "error":
-      return jsonWithError({}, "This is an error message");
+      return redirectWithError("/from-library", "This is an error message");
     case "info":
-      return jsonWithInfo({}, "This is an info");
+      return redirectWithInfo("/from-library", "This is an info");
     case "warning":
-      return jsonWithWarning({}, "This is a warning");
+      return redirectWithWarning("/from-library", "This is a warning");
   }
 }
 
-export default function TestWithoutRedirection() {
+export default function App() {
+  const { toast } = useLoaderData<typeof loader>();
+  useEffect(() => {
+    if (toast) {
+      notify(toast.message, { type: toast.type });
+    }
+  }, [toast]);
   return (
     <div
       style={{
@@ -42,7 +55,7 @@ export default function TestWithoutRedirection() {
         }}
       >
         <div>
-          Test <b>success message</b> without redirection
+          Test <b>success message</b> with redirection
           <Form method="POST">
             <button name="messageType" value="success" type="submit">
               Click here
@@ -50,7 +63,7 @@ export default function TestWithoutRedirection() {
           </Form>
         </div>
         <div>
-          Test <b>error message</b> without redirection
+          Test <b>error message</b> with redirection
           <Form method="POST">
             <button name="messageType" value="error" type="submit">
               Click here
@@ -66,7 +79,7 @@ export default function TestWithoutRedirection() {
         }}
       >
         <div>
-          Test <b>warning message</b> without redirection
+          Test <b>warning message</b> with redirection
           <Form method="POST">
             <button name="messageType" value="warning" type="submit">
               Click here
@@ -74,7 +87,7 @@ export default function TestWithoutRedirection() {
           </Form>
         </div>
         <div>
-          Test <b>info message</b> without redirection
+          Test <b>info message</b> with redirection
           <Form method="POST">
             <button name="messageType" value="info" type="submit">
               Click here
