@@ -144,6 +144,50 @@ export default function App() {
 
 ![react-toastify](./assets/sonner.gif) 
 
+## Overriding cookie options
+
+You can override the default cookie options by passing in your own options via the `setToastCookieOptions` function.
+
+```tsx
+import { setToastCookieOptions } from "remix-toast";
+
+setToastCookieOptions({ 
+  secrets:
+    process.env.NODE_ENV === "production"
+      ? [process.env.SESSION_SECRET]
+      : ["secret"]
+});
+```
+
+## Creating utility functions with custom sessions
+
+`createToastUtilsWithCustomSession` is a function that allows you to create a custom session for your toasts. This is useful if you want to have different types of toasts for different parts of your app.
+
+```tsx
+import { createCookieSessionStorage } from "@remix-run/node";
+import { createToastUtilsWithCustomSession } from "remix-toast";
+
+const session = createCookieSessionStorage({
+  cookie: {
+    name: "your-custom-session",
+    secrets: ["some-secret"],
+  },
+});
+
+export const { 
+  useToast, 
+  redirectWithToast, 
+  redirectWithSuccess, 
+  redirectWithError, 
+  redirectWithInfo, 
+  redirectWithWarning, 
+  jsonWithSuccess, 
+  jsonWithError, 
+  jsonWithInfo, 
+  jsonWithWarning 
+} = createToastUtilsWithCustomSession(session);
+```
+
 ## Utilities
 
 ### redirectWithToast
@@ -154,7 +198,7 @@ General function that allows you to redirect to a new route and show a toast mes
 import { redirectWithToast } from "remix-toast";
 
 export const action = () => {
-  return redirectWithToast("/login", { message: "You need to login to access this page", type: "error" });
+  return redirectWithToast("/login", { message: "You need to login to access this page", description: "description of toast", type: "error" });
 }
 
 ```
@@ -167,7 +211,9 @@ Redirects to a new route and shows a success toast message.
 import { redirectWithSuccess } from "remix-toast";
 
 export const action = () => {
-  return redirectWithSuccess("/login", "You are logged in!");
+  return redirectWithSuccess("/login", "You are logged in!"); 
+  //or with description and message (works for all the other utilities as well)
+  return redirectWithSuccess("/login", { message: "You are logged in!", description: "description of toast" });
 }
 
 ```
@@ -218,6 +264,8 @@ import { jsonWithSuccess } from "remix-toast";
 
 export const action = () => {
   return jsonWithSuccess({ result: "Data saved successfully" }, "Operation successful! 🎉");
+   //or with description and message (works for all the other utilities as well)
+  return jsonWithSuccess({ result: "Data saved successfully" }, { message: "Operation successful! 🎉", description: "description of toast" });
 };
 ```
 

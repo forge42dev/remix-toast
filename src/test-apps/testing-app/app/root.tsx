@@ -1,9 +1,9 @@
 import { json, type LinksFunction, type LoaderFunctionArgs } from "@remix-run/node";
 import { Links, LiveReload, Meta, Outlet, Scripts, ScrollRestoration, useLoaderData } from "@remix-run/react";
 import { useEffect } from "react";
-import { getToast } from "remix-toast";
 import { ToastContainer, toast as notify } from "react-toastify";
 import toastStyles from "react-toastify/dist/ReactToastify.css";
+import { getToast } from "./toast";
 
 export const links: LinksFunction = () => [{ rel: "stylesheet", href: toastStyles }];
 
@@ -19,6 +19,7 @@ export default function App() {
       notify(toast.message, { type: toast.type });
     }
   }, [toast]);
+
   return (
     <html lang="en">
       <head>

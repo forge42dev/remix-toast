@@ -1,11 +1,12 @@
 import { cssBundleHref } from "@remix-run/css-bundle";
 import { json, type LinksFunction, type LoaderFunctionArgs } from "@remix-run/node";
-import { Link, useSubmit } from "@remix-run/react";
-import { getToast, redirectWithSuccess } from "remix-toast";
+import { useSubmit } from "@remix-run/react";
+import { getToast, redirectWithSuccess } from "~/toast";
 export const links: LinksFunction = () => [...(cssBundleHref ? [{ rel: "stylesheet", href: cssBundleHref }] : [])];
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const { toast, headers } = await getToast(request);
+
   return json({ toast }, { headers });
 };
 
