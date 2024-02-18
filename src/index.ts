@@ -4,22 +4,41 @@ import {
   redirect,
   json,
   SessionStorage,
+  SessionIdStorageStrategy,
 } from "@remix-run/server-runtime";
 import { FlashSessionValues, ToastMessage, flashSessionValuesSchema } from "./schema";
 import { sign, unsign } from "./crypto";
 
 const FLASH_SESSION = "flash";
 const createCookie = createCookieFactory({ sign, unsign });
+type ToastCookieOptions = Partial<SessionIdStorageStrategy["cookie"]>;
+
+const toastCookieOptions = {
+  name: "toast-session",
+  sameSite: "lax",
+  path: "/",
+  httpOnly: true,
+  secrets: ["s3Cr3t"],
+} satisfies ToastCookieOptions;
 
 const sessionStorage = createCookieSessionStorageFactory(createCookie)({
-  cookie: {
-    name: "toast-session",
-    sameSite: "lax",
-    path: "/",
-    httpOnly: true,
-    secrets: ["s3Cr3t"],
-  },
+  cookie: toastCookieOptions,
 });
+
+/**
+ * Sets the cookie options to be used for the toast cookie
+ *
+ * @param options Cookie options to be used for the toast cookie
+ */
+export function setToastCookieOptions(options: ToastCookieOptions) {
+  Object.assign(toastCookieOptions, options);
+  Object.assign(
+    sessionStorage,
+    createCookieSessionStorageFactory(createCookie)({
+      cookie: toastCookieOptions,
+    }),
+  );
+}
 
 function getSessionFromRequest(request: Request, customSession?: SessionStorage) {
   const cookie = request.headers.get("Cookie");
@@ -113,7 +132,7 @@ export async function getToast(
   return { toast, headers };
 }
 
-export type { ToastMessage };
+export type { ToastMessage, ToastCookieOptions };
 
 /**
  * Helper method used to initialize the whole library using a custom session. Returns all the utilities enhanced with the custom session

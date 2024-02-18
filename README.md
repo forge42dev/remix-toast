@@ -144,6 +144,21 @@ export default function App() {
 
 ![react-toastify](./assets/sonner.gif) 
 
+## Overriding cookie options
+
+You can override the default cookie options by passing in your own options via the `setToastCookieOptions` function.
+
+```tsx
+import { setToastCookieOptions } from "remix-toast";
+
+setToastCookieOptions({ 
+  secrets:
+    process.env.NODE_ENV === "production"
+      ? [process.env.SESSION_SECRET]
+      : ["secret"]
+});
+```
+
 ## Creating utility functions with custom sessions
 
 `createToastUtilsWithCustomSession` is a function that allows you to create a custom session for your toasts. This is useful if you want to have different types of toasts for different parts of your app.
