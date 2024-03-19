@@ -135,7 +135,7 @@ export default function App() {
       <body>
         ...
         {/* Add the toast container */}
-        <ToastContainer />
+        <Toaster />
       </body>
     </html>
   );
