@@ -13,3 +13,8 @@ export const flashSessionValuesSchema = z.object({
 export type ToastMessage = z.infer<typeof toastMessageSchema>;
 
 export type FlashSessionValues = z.infer<typeof flashSessionValuesSchema>;
+
+export type ResponseStub = {
+  readonly headers: Headers,
+  status: number
+};

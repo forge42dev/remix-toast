@@ -1,12 +1,10 @@
 import {
   createCookieSessionStorageFactory,
-  createCookieFactory,
-  redirect,
-  json,
+  createCookieFactory,  
   SessionStorage,
   SessionIdStorageStrategy,
 } from "@remix-run/server-runtime";
-import { FlashSessionValues, ToastMessage, flashSessionValuesSchema } from "./schema";
+import { FlashSessionValues, ToastMessage, flashSessionValuesSchema, ResponseStub } from "./schema";
 import { sign, unsign } from "./crypto";
 
 const FLASH_SESSION = "flash";
@@ -48,40 +46,46 @@ function getSessionFromRequest(request: Request, customSession?: SessionStorage)
 
 async function flashMessage(
   flash: FlashSessionValues,
-  headers?: ResponseInit["headers"],
+  response: ResponseStub,
   customSession?: SessionStorage,
 ) {
   const sessionToUse = customSession ? customSession : sessionStorage;
   const session = await sessionToUse.getSession();
   session.flash(FLASH_SESSION, flash);
   const cookie = await sessionToUse.commitSession(session);
-  const newHeaders = new Headers(headers);
-  newHeaders.append("Set-Cookie", cookie);
-  return newHeaders;
+  response.headers.append("Set-Cookie", cookie);
 }
 
 async function redirectWithFlash(
   url: string,
   flash: FlashSessionValues,
-  init?: ResponseInit,
+  response: ResponseStub | undefined,
   customSession?: SessionStorage,
 ) {
-  return redirect(url, {
-    ...init,
-    headers: await flashMessage(flash, init?.headers, customSession),
-  });
+  if (!response) {
+    throw new Error("'response' is not defined. Required for single-fetch.");
+  }
+
+  await flashMessage(flash, response, customSession);
+  response.status = 302;
+  response.headers.set("Location", url);
+
+  throw response;
 }
 
 async function jsonWithFlash<T>(
   data: T,
   flash: FlashSessionValues,
-  init?: ResponseInit,
+  response: ResponseStub | undefined,
   customSession?: SessionStorage,
 ) {
-  return json(data, {
-    ...init,
-    headers: await flashMessage(flash, init?.headers, customSession),
-  });
+  if (!response) {
+    throw new Error("'response' is not defined. Required for single-fetch.");
+  }
+
+  await flashMessage(flash, response, customSession);
+
+  return data;
 }
 
 type BaseFactoryType = {
@@ -93,11 +97,11 @@ const jsonWithToastFactory = ({ type, session }: BaseFactoryType) => {
   return <T>(
     data: T,
     messageOrToast: string | Omit<ToastMessage, "type">,
-    init?: ResponseInit,
+    response: ResponseStub | undefined,
     customSession?: SessionStorage,
   ) => {
     const finalInfo = typeof messageOrToast === "string" ? { message: messageOrToast } : messageOrToast;
-    return jsonWithFlash(data, { toast: { ...finalInfo, type } }, init, customSession ?? session);
+    return jsonWithFlash(data, { toast: { ...finalInfo, type } }, response, customSession ?? session);
   };
 };
 
@@ -105,31 +109,37 @@ const redirectWithToastFactory = ({ type, session }: BaseFactoryType) => {
   return (
     redirectUrl: string,
     messageOrToast: string | Omit<ToastMessage, "type">,
-    init?: ResponseInit,
+    response: ResponseStub | undefined,
     customSession?: SessionStorage,
   ) => {
     const finalInfo = typeof messageOrToast === "string" ? { message: messageOrToast } : messageOrToast;
-    return redirectWithFlash(redirectUrl, { toast: { ...finalInfo, type } }, init, customSession ?? session);
+    return redirectWithFlash(redirectUrl, { toast: { ...finalInfo, type } }, response, customSession ?? session);
   };
 };
 
 /**
  * Helper method used to get the toast data from the current request and purge the flash storage from the session
  * @param request Current request
+ * @param response ResponseStub
  * @returns Returns the the toast notification if exists, undefined otherwise and the headers needed to purge it from the session
  */
 export async function getToast(
   request: Request,
+  response: ResponseStub | undefined,
   customSession?: SessionStorage,
-): Promise<{ toast: ToastMessage | undefined; headers: Headers }> {
+): Promise<ToastMessage | undefined> {
+  if (!response) {
+    throw new Error("'response' is not defined. Required for single-fetch.");
+  }
+
   const session = await getSessionFromRequest(request, customSession);
   const result = flashSessionValuesSchema.safeParse(session.get(FLASH_SESSION));
   const flash = result.success ? result.data : undefined;
-  const headers = new Headers({
-    "Set-Cookie": await sessionStorage.commitSession(session),
-  });
+  const cookie = await sessionStorage.commitSession(session);
+  response?.headers.set("Set-Cookie", cookie)
+
   const toast = flash?.toast;
-  return { toast, headers };
+  return toast;
 }
 
 export type { ToastMessage, ToastCookieOptions };
@@ -145,21 +155,21 @@ export type { ToastMessage, ToastCookieOptions };
  */
 export const createToastUtilsWithCustomSession = (session: SessionStorage) => {
   return {
-    jsonWithToast: <T>(data: T, toast: ToastMessage, init?: ResponseInit) => {
-      return jsonWithFlash(data, { toast }, init, session);
+    jsonWithToast: <T>(data: T, toast: ToastMessage, response: ResponseStub | undefined) => {
+      return jsonWithFlash(data, { toast }, response, session);
     },
     jsonWithSuccess: jsonWithToastFactory({ type: "success", session }),
     jsonWithError: jsonWithToastFactory({ type: "error", session }),
     jsonWithInfo: jsonWithToastFactory({ type: "info", session }),
     jsonWithWarning: jsonWithToastFactory({ type: "warning", session }),
-    redirectWithToast: (redirectUrl: string, toast: ToastMessage, init?: ResponseInit) => {
-      return redirectWithFlash(redirectUrl, { toast }, init, session);
+    redirectWithToast: (redirectUrl: string, toast: ToastMessage, response: ResponseStub | undefined) => {
+      return redirectWithFlash(redirectUrl, { toast }, response, session);
     },
     redirectWithSuccess: redirectWithToastFactory({ type: "success", session }),
     redirectWithError: redirectWithToastFactory({ type: "error", session }),
     redirectWithInfo: redirectWithToastFactory({ type: "info", session }),
     redirectWithWarning: redirectWithToastFactory({ type: "warning", session }),
-    getToast: (request: Request) => getToast(request, session),
+    getToast: (request: Request, response: ResponseStub | undefined) => getToast(request, response, session),
   };
 };
 
@@ -171,8 +181,8 @@ export const createToastUtilsWithCustomSession = (session: SessionStorage) => {
  * @param init Additional response options (status code, additional headers etc)
  * @returns Returns data with toast cookie set
  */
-export const jsonWithToast = <T>(data: T, toast: ToastMessage, init?: ResponseInit, customSession?: SessionStorage) => {
-  return jsonWithFlash(data, { toast }, init, customSession);
+export const jsonWithToast = <T>(data: T, toast: ToastMessage, response: ResponseStub | undefined, customSession?: SessionStorage) => {
+  return jsonWithFlash(data, { toast }, response, customSession);
 };
 
 /**
@@ -226,10 +236,10 @@ export const jsonWithWarning = jsonWithToastFactory({ type: "warning" });
 export const redirectWithToast = (
   redirectUrl: string,
   toast: ToastMessage,
-  init?: ResponseInit,
+  response: ResponseStub | undefined,
   customSession?: SessionStorage,
 ) => {
-  return redirectWithFlash(redirectUrl, { toast }, init, customSession);
+  return redirectWithFlash(redirectUrl, { toast }, response, customSession);
 };
 
 /**
