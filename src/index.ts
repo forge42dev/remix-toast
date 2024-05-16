@@ -120,20 +120,26 @@ const redirectWithToastFactory = ({ type, session }: BaseFactoryType) => {
 /**
  * Helper method used to get the toast data from the current request and purge the flash storage from the session
  * @param request Current request
+ * @param response ResponseStub
  * @returns Returns the the toast notification if exists, undefined otherwise and the headers needed to purge it from the session
  */
 export async function getToast(
   request: Request,
+  response: ResponseStub | undefined,
   customSession?: SessionStorage,
-): Promise<{ toast: ToastMessage | undefined; headers: Headers }> {
+): Promise<ToastMessage | undefined> {
+  if (!response) {
+    throw new Error("'response' is not defined. Required for single-fetch.");
+  }
+
   const session = await getSessionFromRequest(request, customSession);
   const result = flashSessionValuesSchema.safeParse(session.get(FLASH_SESSION));
   const flash = result.success ? result.data : undefined;
-  const headers = new Headers({
-    "Set-Cookie": await sessionStorage.commitSession(session),
-  });
+  const cookie = await sessionStorage.commitSession(session);
+  response?.headers.set("Set-Cookie", cookie)
+
   const toast = flash?.toast;
-  return { toast, headers };
+  return toast;
 }
 
 export type { ToastMessage, ToastCookieOptions };
@@ -163,7 +169,7 @@ export const createToastUtilsWithCustomSession = (session: SessionStorage) => {
     redirectWithError: redirectWithToastFactory({ type: "error", session }),
     redirectWithInfo: redirectWithToastFactory({ type: "info", session }),
     redirectWithWarning: redirectWithToastFactory({ type: "warning", session }),
-    getToast: (request: Request) => getToast(request, session),
+    getToast: (request: Request, response: ResponseStub | undefined) => getToast(request, response, session),
   };
 };
 
