@@ -40,12 +40,6 @@ export function setToastCookieOptions(options: ToastCookieOptions) {
   );
 }
 
-function getSessionFromRequest(request: Request, customSession?: SessionStorage) {
-  const cookie = request.headers.get("Cookie");
-  const sessionToUse = customSession ? customSession : sessionStorage;
-  return sessionToUse.getSession(cookie);
-}
-
 async function flashMessage(
   flash: FlashSessionValues,
   headers?: ResponseInit["headers"],
@@ -122,11 +116,13 @@ export async function getToast(
   request: Request,
   customSession?: SessionStorage,
 ): Promise<{ toast: ToastMessage | undefined; headers: Headers }> {
-  const session = await getSessionFromRequest(request, customSession);
+  const sessionToUse = customSession ? customSession : sessionStorage;
+  const cookie = request.headers.get("Cookie");
+  const session = await sessionToUse.getSession(cookie);
   const result = flashSessionValuesSchema.safeParse(session.get(FLASH_SESSION));
   const flash = result.success ? result.data : undefined;
   const headers = new Headers({
-    "Set-Cookie": await sessionStorage.commitSession(session),
+    "Set-Cookie": await sessionToUse.commitSession(session),
   });
   const toast = flash?.toast;
   return { toast, headers };
