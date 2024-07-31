@@ -174,8 +174,8 @@ const session = createCookieSessionStorage({
   },
 });
 
-export const { 
-  useToast, 
+export const {
+  getToast,
   redirectWithToast, 
   redirectWithSuccess, 
   redirectWithError, 
