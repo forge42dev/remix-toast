@@ -1,6 +1,6 @@
 import type { MetaFunction } from "@remix-run/node";
 import { Link, useSubmit } from "@remix-run/react";
-import { redirectWithError } from "~/toast";
+import { redirectWithError } from "remix-toast";
 
 export const meta: MetaFunction = () => {
   return [{ title: "New Remix App" }, { name: "description", content: "Welcome to Remix!" }];

@@ -3,7 +3,7 @@ import { Links, LiveReload, Meta, Outlet, Scripts, ScrollRestoration, useLoaderD
 import { useEffect } from "react";
 import { ToastContainer, toast as notify } from "react-toastify";
 import toastStyles from "react-toastify/dist/ReactToastify.css";
-import { getToast } from "./toast";
+import { getToast } from "remix-toast";
 
 export const links: LinksFunction = () => [{ rel: "stylesheet", href: toastStyles }];
 

@@ -1,7 +1,7 @@
 import { cssBundleHref } from "@remix-run/css-bundle";
 import { json, type LinksFunction, type LoaderFunctionArgs } from "@remix-run/node";
 import { useSubmit } from "@remix-run/react";
-import { getToast, redirectWithSuccess } from "~/toast";
+import { getToast, redirectWithSuccess } from "remix-toast";
 export const links: LinksFunction = () => [...(cssBundleHref ? [{ rel: "stylesheet", href: cssBundleHref }] : [])];
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
