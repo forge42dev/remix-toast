@@ -6,7 +6,7 @@
 ![npm](https://img.shields.io/npm/dw/remix-toast?style=plastic) 
 ![GitHub top language](https://img.shields.io/github/languages/top/Code-Forge-Net/remix-toast?style=plastic) 
 
-Simple server-side toast management library for Remix.run!
+Simple server-side toast management library for React router v7 / Remix.run!
 
 This library provides you with all the essential utilities that you might need to
 show toast notifications to your users. The client side implementation is completely
@@ -23,6 +23,24 @@ https://alemtuzlak.hashnode.dev/handling-toasts-in-remix
 npm install remix-toast
 ```
 
+## Remix.run
+
+If you are using Remix.run you can use v1.2.2 of this library or lower. V2 onwards is only react-router v7 compatible.
+
+### Migration guide to react-router v7
+
+If you are using react-router v7 you can use v2.0.0 of this library. The only thing you have to change is rename all the `json` methods to `data` methods, the redirect methods stayed the same. For example:
+
+```diff
+- import { jsonWithSuccess } from "remix-toast";
++ import { dataWithSuccess } from "remix-toast";
+
+export const action = () => { 
+- return jsonWithSuccess({ result: "Data saved successfully" }, "Operation successful! 🎉");
++ return dataWithSuccess({ result: "Data saved successfully" }, "Operation successful! 🎉");
+};
+```
+
 ## Setup
 
 ### Server-side
@@ -36,7 +54,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   // Extracts the toast from the request
   const { toast, headers } = await getToast(request);
   // Important to pass in the headers so the toast is cleared properly
-  return json({ toast }, { headers });
+  return data({ toast }, { headers });
 }
 
 export default function App({ children }: { children: ReactNode }) {
@@ -61,19 +79,19 @@ After this you can then use any toast notification library you prefer, but here 
 #### react-toastify
 
 ```tsx
-import { json, type LinksFunction, type LoaderFunctionArgs } from "@remix-run/node";
-import { Links, LiveReload, Meta, Outlet, Scripts, ScrollRestoration, useLoaderData } from "@remix-run/react";
+import { data, type LinksFunction, type LoaderFunctionArgs } from "react-router";
+import { Links, LiveReload, Meta, Outlet, Scripts, ScrollRestoration, useLoaderData } from "react-router";
 import { useEffect } from "react";
 import { getToast } from "remix-toast";
 import { ToastContainer, toast as notify } from "react-toastify";
-import toastStyles from "react-toastify/dist/ReactToastify.css";
+import toastStyles from "react-toastify/ReactToastify.css?url";
 
 // Add the toast stylesheet
 export const links: LinksFunction = () => [{ rel: "stylesheet", href: toastStyles }];
 // Implemented from above
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const { toast, headers } = await getToast(request);
-  return json({ toast }, { headers });
+  return data({ toast }, { headers });
 };
 
 export default function App() {
@@ -106,8 +124,8 @@ export default function App() {
 #### Sonner
 
 ```tsx
-import { json, type LinksFunction, type LoaderFunctionArgs } from "@remix-run/node";
-import { Links, LiveReload, Meta, Outlet, Scripts, ScrollRestoration, useLoaderData } from "@remix-run/react";
+import { data, type LinksFunction, type LoaderFunctionArgs } from "react-router";
+import { Links, LiveReload, Meta, Outlet, Scripts, ScrollRestoration, useLoaderData } from "react-router";
 import { useEffect } from "react";
 import { getToast } from "remix-toast";
 import { Toaster, toast as notify } from "sonner";
@@ -115,7 +133,7 @@ import { Toaster, toast as notify } from "sonner";
 // Implemented from above
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const { toast, headers } = await getToast(request);
-  return json({ toast }, { headers });
+  return data({ toast }, { headers });
 };
 
 export default function App() {
@@ -165,7 +183,7 @@ setToastCookieOptions({
 `createToastUtilsWithCustomSession` is a function that allows you to create a custom session for your toasts. This is useful if you want to have different types of toasts for different parts of your app.
 
 ```tsx
-import { createCookieSessionStorage } from "@remix-run/node";
+import { createCookieSessionStorage } from "react-router";
 import { createToastUtilsWithCustomSession } from "remix-toast";
 
 const session = createCookieSessionStorage({
@@ -182,10 +200,10 @@ export const {
   redirectWithError, 
   redirectWithInfo, 
   redirectWithWarning, 
-  jsonWithSuccess, 
-  jsonWithError, 
-  jsonWithInfo, 
-  jsonWithWarning 
+  dataWithSuccess, 
+  dataWithError, 
+  dataWithInfo, 
+  dataWithWarning 
 } = createToastUtilsWithCustomSession(session);
 ```
 
@@ -256,53 +274,53 @@ export const action = () => {
 };
 ```
 
-### jsonWithSuccess
+### dataWithSuccess
 
 Display a success toast message without a redirection.
 
 ```tsx
-import { jsonWithSuccess } from "remix-toast";
+import { dataWithSuccess } from "remix-toast";
 
 export const action = () => {
-  return jsonWithSuccess({ result: "Data saved successfully" }, "Operation successful! 🎉");
+  return dataWithSuccess({ result: "Data saved successfully" }, "Operation successful! 🎉");
    //or with description and message (works for all the other utilities as well)
-  return jsonWithSuccess({ result: "Data saved successfully" }, { message: "Operation successful! 🎉", description: "description of toast" });
+  return dataWithSuccess({ result: "Data saved successfully" }, { message: "Operation successful! 🎉", description: "description of toast" });
 };
 ```
 
-### jsonWithError
+### dataWithError
 
 Display an error toast message without a redirection.
 
 ```tsx
-import { jsonWithError } from "remix-toast";
+import { dataWithError } from "remix-toast";
 
 export const action = () => {
-  return jsonWithError(null, "Oops! Something went wrong. Please try again later.");
+  return dataWithError(null, "Oops! Something went wrong. Please try again later.");
 };
 ```
 
-### jsonWithInfo
+### dataWithInfo
 
 Display an info toast message without a redirection.
 
 ```tsx
-import { jsonWithInfo } from "remix-toast";
+import { dataWithInfo } from "remix-toast";
 
 export const action = () => {
-  return jsonWithInfo({ info: "Additional information" }, "Your profile has been successfully updated.");
+  return dataWithInfo({ info: "Additional information" }, "Your profile has been successfully updated.");
 };
 ```
 
-### jsonWithWarning
+### dataWithWarning
 
 Display a warning toast message without a redirection.
 
 ```tsx
-import { jsonWithWarning } from "remix-toast";
+import { dataWithWarning } from "remix-toast";
 
 export const action = () => {
-  return jsonWithWarning({ warning: "Potential issues" }, "Your session is about to expire.");
+  return dataWithWarning({ warning: "Potential issues" }, "Your session is about to expire.");
 };
 ```
 

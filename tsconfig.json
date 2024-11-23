@@ -103,5 +103,5 @@
     // "skipDefaultLibCheck": true,                      /* Skip type checking .d.ts files that are included with TypeScript. */
     "skipLibCheck": true /* Skip type checking all .d.ts files. */
   },
-  "exclude": ["./bin/**/*.test.ts", "./dist/**/*", "./bin/mocks/**/*", "./*.config.ts", "src/test-apps/**"]
+  "exclude": ["./bin/**/*.test.ts", "./dist/**/*", "./bin/mocks/**/*", "./*.config.ts", "test-apps/**"]
 }

@@ -1,16 +1,13 @@
 import {
-  createCookieSessionStorageFactory,
-  createCookieFactory,
   redirect,
-  json,
   SessionStorage,
   SessionIdStorageStrategy,
-} from "@remix-run/server-runtime";
+  createCookieSessionStorage,
+  data as dataFn,
+} from "react-router";
 import { FlashSessionValues, ToastMessage, flashSessionValuesSchema } from "./schema";
-import { sign, unsign } from "./crypto";
 
 const FLASH_SESSION = "flash";
-const createCookie = createCookieFactory({ sign, unsign });
 type ToastCookieOptions = Partial<SessionIdStorageStrategy["cookie"]>;
 
 const toastCookieOptions = {
@@ -21,7 +18,7 @@ const toastCookieOptions = {
   secrets: ["s3Cr3t"],
 } satisfies ToastCookieOptions;
 
-const sessionStorage = createCookieSessionStorageFactory(createCookie)({
+const sessionStorage = createCookieSessionStorage({
   cookie: toastCookieOptions,
 });
 
@@ -34,7 +31,7 @@ export function setToastCookieOptions(options: ToastCookieOptions) {
   Object.assign(toastCookieOptions, options);
   Object.assign(
     sessionStorage,
-    createCookieSessionStorageFactory(createCookie)({
+    createCookieSessionStorage({
       cookie: toastCookieOptions,
     }),
   );
@@ -66,13 +63,13 @@ async function redirectWithFlash(
   });
 }
 
-async function jsonWithFlash<T>(
+async function dataWithFlash<T>(
   data: T,
   flash: FlashSessionValues,
   init?: ResponseInit,
   customSession?: SessionStorage,
 ) {
-  return json(data, {
+  return dataFn(data, {
     ...init,
     headers: await flashMessage(flash, init?.headers, customSession),
   });
@@ -83,7 +80,7 @@ type BaseFactoryType = {
   type: "info" | "success" | "error" | "warning";
 };
 
-const jsonWithToastFactory = ({ type, session }: BaseFactoryType) => {
+const dataWithToastFactory = ({ type, session }: BaseFactoryType) => {
   return <T>(
     data: T,
     messageOrToast: string | Omit<ToastMessage, "type">,
@@ -91,7 +88,7 @@ const jsonWithToastFactory = ({ type, session }: BaseFactoryType) => {
     customSession?: SessionStorage,
   ) => {
     const finalInfo = typeof messageOrToast === "string" ? { message: messageOrToast } : messageOrToast;
-    return jsonWithFlash(data, { toast: { ...finalInfo, type } }, init, customSession ?? session);
+    return dataWithFlash(data, { toast: { ...finalInfo, type } }, init, customSession ?? session);
   };
 };
 
@@ -137,17 +134,17 @@ export type { ToastMessage, ToastCookieOptions };
  * These utilities will not override the default session, but will use the custom one you provide. So be careful of imports if you plan to
  * use both, or only plan to use this one.
  * @param session Custom session to be used instead of the default one
- * @returns Returns all the utilities you need to display toast notifications and redirect the user or return jsons with toast notifications
+ * @returns Returns all the utilities you need to display toast notifications and redirect the user or return data functions with toast notifications
  */
 export const createToastUtilsWithCustomSession = (session: SessionStorage) => {
   return {
-    jsonWithToast: <T>(data: T, toast: ToastMessage, init?: ResponseInit) => {
-      return jsonWithFlash(data, { toast }, init, session);
+    dataWithToast: <T>(data: T, toast: ToastMessage, init?: ResponseInit) => {
+      return dataWithFlash(data, { toast }, init, session);
     },
-    jsonWithSuccess: jsonWithToastFactory({ type: "success", session }),
-    jsonWithError: jsonWithToastFactory({ type: "error", session }),
-    jsonWithInfo: jsonWithToastFactory({ type: "info", session }),
-    jsonWithWarning: jsonWithToastFactory({ type: "warning", session }),
+    dataWithSuccess: dataWithToastFactory({ type: "success", session }),
+    dataWithError: dataWithToastFactory({ type: "error", session }),
+    dataWithInfo: dataWithToastFactory({ type: "info", session }),
+    dataWithWarning: dataWithToastFactory({ type: "warning", session }),
     redirectWithToast: (redirectUrl: string, toast: ToastMessage, init?: ResponseInit) => {
       return redirectWithFlash(redirectUrl, { toast }, init, session);
     },
@@ -167,48 +164,48 @@ export const createToastUtilsWithCustomSession = (session: SessionStorage) => {
  * @param init Additional response options (status code, additional headers etc)
  * @returns Returns data with toast cookie set
  */
-export const jsonWithToast = <T>(data: T, toast: ToastMessage, init?: ResponseInit, customSession?: SessionStorage) => {
-  return jsonWithFlash(data, { toast }, init, customSession);
+export const dataWithToast = <T>(data: T, toast: ToastMessage, init?: ResponseInit, customSession?: SessionStorage) => {
+  return dataWithFlash(data, { toast }, init, customSession);
 };
 
 /**
- * Helper method used to generate a JSON response object with a success toast message.
+ * Helper method used to generate a data response object with a success toast message.
  *
  * @param data The data to be included in the response.
  * @param message The message for the success toast notification.
  * @param init Additional response options (status code, additional headers etc)
- * @returns Returns a JSON response object with the specified success toast message.
+ * @returns Returns a data response object with the specified success toast message.
  */
-export const jsonWithSuccess = jsonWithToastFactory({ type: "success" });
+export const dataWithSuccess = dataWithToastFactory({ type: "success" });
 
 /**
- * Helper method used to generate a JSON response object with an error toast message.
+ * Helper method used to generate a data response object with an error toast message.
  *
  * @param data The data to be included in the response.
  * @param message The message for the error toast notification.
  * @param init Additional response options (status code, additional headers etc)
- * @returns Returns a JSON response object with the specified error toast message.
+ * @returns Returns a data response object with the specified error toast message.
  */
-export const jsonWithError = jsonWithToastFactory({ type: "error" });
+export const dataWithError = dataWithToastFactory({ type: "error" });
 /**
- * Helper method used to generate a JSON response object with an info toast message.
+ * Helper method used to generate a data response object with an info toast message.
  *
  * @param data The data to be included in the response.
  * @param message The message for the info toast notification.
  * @param init Additional response options (status code, additional headers etc)
- * @returns Returns a JSON response object with the specified info toast message.
+ * @returns Returns a data response object with the specified info toast message.
  */
-export const jsonWithInfo = jsonWithToastFactory({ type: "info" });
+export const dataWithInfo = dataWithToastFactory({ type: "info" });
 
 /**
- * Helper method used to generate a JSON response object with a warning toast message.
+ * Helper method used to generate a data response object with a warning toast message.
  *
  * @param data The data to be included in the response.
  * @param message The message for the warning toast notification.
  * @param init Additional response options (status code, additional headers etc)
- * @returns Returns a JSON response object with the specified warning toast message.
+ * @returns Returns a data response object with the specified warning toast message.
  */
-export const jsonWithWarning = jsonWithToastFactory({ type: "warning" });
+export const dataWithWarning = dataWithToastFactory({ type: "warning" });
 
 /**
  * Helper method used to redirect the user to a new page with a toast notification
