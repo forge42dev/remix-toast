@@ -51,7 +51,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Code-Forge-Net/remix-toast.git"
+    "url": "git+https://github.com/forge42dev/remix-toast.git"
   },
   "keywords": [
     "Remix",
@@ -63,10 +63,10 @@
   "author": "Alem Tuzlak",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/Code-Forge-Net/remix-toast/issues"
+    "url": "https://github.com/forge42dev/remix-toast/issues"
   },
-  "homepage": "https://github.com/Code-Forge-Net/remix-toast#readme",
-  "readme": "https://github.com/Code-Forge-Net/remix-toast#readme",
+  "homepage": "https://github.com/forge42dev/remix-toast#readme",
+  "readme": "https://github.com/forge42dev/remix-toast#readme",
   "dependencies": {
     "zod": "^3.22.3"
   },
